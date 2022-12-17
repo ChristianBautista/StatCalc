@@ -1,2 +1,2 @@
 # StatCalc
-An application that performs statistical analysis for various sports.
+This application analyzes inputted match/game data and outputs a csv file displaying overall stats. Below is a list of supported sports and fields.
