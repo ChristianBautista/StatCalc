@@ -19,5 +19,16 @@ This application analyzes inputted match/game data and outputs a overall statlin
 	- *match* i.t.o. *points*
 	- *round* i.t.o. *points*
 	- *knockouts* i.t.o. *knockouts*
+- **Darts**
+	- *match* i.t.o. *sets*
+	- *set* i.t.o. *legs*
+- **Fencing**
+	- *match* i.t.o. *points*
+	- *round* i.t.o. *points*
+	- *sudden death* i.t.o. *points*
+- **Football**
+	- *game* i.t.o. *points*
+	- *quarter* i.t.o. *points*
+	- *overtime* i.t.o. *points*
 
 **i.t.o.* - in terms of
