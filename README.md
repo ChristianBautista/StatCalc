@@ -8,5 +8,16 @@ This application analyzes inputted match/game data and outputs a overall statlin
 	- *game* i.t.o. *runs*
 	- *inning* i.t.o. *runs*
 	- *hits* i.t.o. *hits*
+- **Basketball**
+	- *game* i.t.o. *points*
+	- *quarter* i.t.o. *points*
+	- *overtime* i.t.o. *points*
+- **Bowling**
+	- *game* i.t.o. *points*
+	- *frame* i.t.o. *pins*
+- **Boxing**
+	- *match* i.t.o. *points*
+	- *round* i.t.o. *points*
+	- *knockouts* i.t.o. *knockouts*
 
 **i.t.o.* - in terms of
