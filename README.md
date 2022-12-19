@@ -6,7 +6,15 @@ This application analyzes inputted match/game scores and outputs a overall statl
 	1. The first column must be labeled "Flag"
 	2. The second and third columns must have one of these 2 keywords: "Player" or "Team". Alternatively, the second and third columns can be labeled as "Winner" and "Loser" respectively. **NOTE:** Doing so will result in any tied matches counting as a **win** for the player/team in the "Winner" column and a **loss** for the player/team in the "Loser" column if the selected sport **does not allow draws**.
 	3. There must be one or more subsequent columns and they must contain any of the valid fields from the selected sport.
-3.  There must be one or more rows after the header containing correctly formatted match/game scores.
+3. There must be one or more rows after the header containing correctly formatted match/game scores that meet the following requirements:
+	1. The second and third columns must have a player or team name.
+	2. Each scoring column must follow the following format "<Player 1/Team 1/Winner Score>-<Player 2/Team 2/Loser Score>"
+4. Every row must either have an empty flag field or valid flag field. See below for more details on flag use cases.
+## Flag Use Cases
+- " " (empty): **must be a match/game** row, will automatically calculate statistics for row.
+- "*": **must be a match/game** row, will manually calculate statistics for row based on user input.
+- "C"/"c": commented row, will disregard.
+- "H"/"h": **must follow input requirements 2.ii and 2.iii**, will only apply to subsequent match/game rows below.
 ## Supported Sports & Valid Fields
 - **Badminton** 
 	- *match* i.t.o. *games*
