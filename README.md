@@ -30,5 +30,56 @@ This application analyzes inputted match/game data and outputs a overall statlin
 	- *game* i.t.o. *points*
 	- *quarter* i.t.o. *points*
 	- *overtime* i.t.o. *points*
+- **Handball**
+	- *match* i.t.o. *goals*
+	- *half* i.t.o. *goals*
+	- *overtime* i.t.o. *goals*
+	- *overtime half* i.t.o. *goals*
+	- *shootout* i.t.o. *goals*
+- **Hockey**
+	- *game* i.t.o. *goals*
+	- *period* i.t.o. *goals*
+	- *overtime* i.t.o. *goals*
+	- *shootout* i.t.o. *goals*
+- **Kickball**
+	- *game* i.t.o. *runs*
+	- *inning* i.t.o. *runs*
+	- *kicks* i.t.o. *kicks*
+- **Pickleball**
+	- *match* i.t.o. *games*
+	- *game* i.t.o. *points*
+- **Soccer**
+	- *match* i.t.o. *goals*
+	- *half* i.t.o. *goals*
+	- *extra time* i.t.o. *goals*
+	- *extra time half* i.t.o. *goals*
+	- *shootout* i.t.o. *goals*
+- **Softball**
+	- *game* i.t.o. *runs*
+	- *innning* i.t.o. *runs*
+	- *hits* i.t.o. *hits*
+- **Table Tennis**
+	- *match* i.t.o. *games*
+	- *game* i.t.o. *points*
+- **Tennis**
+	- *match* i.t.o. *sets*
+	- *set* i.t.o. *games*
+- **Ultimate Frisbee**
+	- *game* i.t.o. *goals*
+	- *half* i.t.o. *goals*
+	- *quarter* i.t.o. *goals*
+	- *overtime* i.t.o. *goals*
+- **Volleyball**
+	- *match* i.t.o. *sets*
+	- *set* i.t.o. *points*
+- **Water Polo**
+	- *game* i.t.o. *goals*
+	- *quarter* i.t.o. *goals*
+	- *overtime* i.t.o. *goals*
+	- *shootout* i.t.o. *goals*
+- **Wiffleball**
+	- *game* i.t.o. *runs*
+	- *inning* i.t.o. *runs*
+	- *hits* i.t.o. *hits*
 
 **i.t.o.* - in terms of
