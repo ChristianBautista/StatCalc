@@ -98,3 +98,12 @@ This application analyzes inputted match/game scores and outputs a overall statl
 	- *hits* i.t.o. *hits*
 
 **i.t.o.* - in terms of
+## Running the Program
+1. Download the ZIP file from this repository.
+2. Extract the contents of the ZIP file into a directory.
+3. Navigate to the directory of the extracted content. 
+4. Ensure there is a `csv` file in this directory that follows the input requirements listed above.
+5. Double-click the file titled `StatCalc.exe`.
+6. When prompted, type in a valid sport, then press `Enter`. 
+7. When prompted, type in the name of the `csv` file you wish to run the program on, then press `Enter`.
+8. Program will output into a file titled `stats.csv` in the same directory as `StatCalc.exe`.
