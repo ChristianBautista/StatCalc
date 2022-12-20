@@ -107,3 +107,6 @@ This application analyzes inputted match/game scores and outputs a overall statl
 6. When prompted, type in a valid sport, then press `Enter`. 
 7. When prompted, type in the name of the `csv` file you wish to run the program on, then press `Enter`.
 8. Program will output into a file titled `stats.csv` in the same directory as `StatCalc.exe`.
+## Future Updates
+- Statistical Calculation for tiebreaks in Tennis and score, strikes, and spares in Bowling.
+- Row and Column tracker to be displayed when prompting user.
