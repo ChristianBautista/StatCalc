@@ -5,6 +5,7 @@
 #include <map>
 #include <vector>
 #include <algorithm>
+#include "smanip.h"
 
 using namespace std;
 
@@ -32,25 +33,6 @@ Wiffleball: [GW,GL,IW,IL,ID,RS,RA,H,HA]
 */
 
 // define const indices
-/*
-const int M = 0;
-const int S = 1;
-const int G = 2;
-const int P = 3;
-const int T = 4;
-const int MW = 0;
-const int ML = 1;
-const int SW = 2;
-const int SL = 3;
-const int GW = 4;
-const int GL = 5;
-const int PW = 6;
-const int PL = 7;
-const int TW = 8;
-const int TL = 9;
-*/
-const string WHITESPACE = " \n\r\t\f\v";
-// const string HEADERS[3] = { "FLAG","WINNER","LOSER" };
 const int W = 0; // Win
 const int L = 1; // Loss
 const int D = 2; // Draw
@@ -58,38 +40,6 @@ const int F = 3; // Points For
 const int A = 4; // Points Against
 const int TW = 6; // Tiebreak Win (tennis)
 const int TL = 7; // Tiebreak Loss (tennis)
-
-string ltrim(string s) {
-    size_t start = s.find_first_not_of(WHITESPACE);
-    return (start == string::npos) ? "" : s.substr(start);
-}
-
-string rtrim(string s) {
-    size_t end = s.find_last_not_of(WHITESPACE);
-    return (end == string::npos) ? "" : s.substr(0, end + 1);
-}
-
-string trim(string s) {
-    return ltrim(rtrim(s));
-}
-
-string lower(string s) {
-    for (int i = 0; i < s.length(); i++) {
-        if (isalpha(s[i])) {
-            s[i] = tolower(s[i]);
-        }
-    }
-    return s;
-}
-
-string upper(string s) {
-    for (int i = 0; i < s.length(); i++) {
-        if (isalpha(s[i])) {
-            s[i] = toupper(s[i]);
-        }
-    }
-    return s;
-}
 
 void usage() {
     /*
