@@ -56,6 +56,8 @@ const int L = 1; // Loss
 const int D = 2; // Draw
 const int F = 3; // Points For
 const int A = 4; // Points Against
+const int TW = 6; // Tiebreak Win (tennis)
+const int TL = 7; // Tiebreak Loss (tennis)
 
 string ltrim(string s) {
     size_t start = s.find_first_not_of(WHITESPACE);
@@ -319,7 +321,7 @@ vector<string> fieldtypes(stringstream& header, vector<string>& valid_fields) {
     return fields;
 }
 
-void stat(map<string, vector<int>>& stats, map<string, int*> indices, vector<string>& names, vector<string>& fields, vector<bool>& used, stringstream& match, bool check, bool& draw, bool& winleft) {
+void stat(map<string, vector<int>>& stats, map<string, int*> indices, vector<string>& names, vector<string>& fields, vector<bool>& used, stringstream& match, string sport, bool check, bool& draw, bool& winleft) {
     // get names
     string n1; // player/team 1
     getline(match, n1, ',');
@@ -392,8 +394,8 @@ void stat(map<string, vector<int>>& stats, map<string, int*> indices, vector<str
         }
         else if (!decided) {
             field_indices = indices["decider"];
-            n1s = stats[n1][field_indices[0]];
-            n2s = stats[n2][field_indices[0]];
+            n1s = stats[n1][field_indices[W]];
+            n2s = stats[n2][field_indices[W]];
             if (field_indices[2] != -1 && field_indices[3] != -1) {
                 n1ts = stats[n1][field_indices[2]];
                 n2ts = stats[n2][field_indices[2]];
@@ -412,11 +414,11 @@ void stat(map<string, vector<int>>& stats, map<string, int*> indices, vector<str
            (use_case == 1 && (!used_now[field_indices[W]] && !used_now[field_indices[L]] && (field_indices[D] == -1 || !used_now[field_indices[D]]))) || \
            (use_case == 2 && (!used_now[0] && !used_now[1] && (!draw || !used_now[2])))) {
             /* Determine whether to perform manual calc or auto calc
-            *  - score: check || (n1s == n2s && field_indices[D]==-1)
+            *  - score: check || (n1s == n2s && field_indices[D]==-1  && !winleft)
             *  - pre_decided: check || (n1s == n2s && field_indices[D]==-1)
             *  - decided: check || ((n1s == n2s && n1ts == n2ts) && !winleft)
             */
-            if (check || (((use_case == 0 || use_case == 1) && (n1s == n2s && field_indices[D] == -1)) || (use_case == 2 && n1s == n2s && n1ts == n2ts && !winleft))) {
+            if (check || (((use_case == 0 || use_case == 1) && (n1s == n2s && field_indices[D] == -1 && !winleft)) || (use_case == 2 && n1s == n2s && n1ts == n2ts && !winleft))) {
                 valid = false;
                 // loop until user gives valid answer
                 while (!valid) {
@@ -448,13 +450,13 @@ void stat(map<string, vector<int>>& stats, map<string, int*> indices, vector<str
                         if (ip != "0") {
                             if (use_case == 2) {
                                 // increment appropriate field
-                                stats[n1][(ip == "3" && draw) ? 2 : (ip == "1" ? 0 : 1)] += 1;
-                                stats[n2][(ip == "3" && draw) ? 2 : (ip == "2" ? 0 : 1)] += 1;
+                                stats[n1][(ip == "3" && draw) ? D : (ip == "1" ? W : L)] += 1;
+                                stats[n2][(ip == "3" && draw) ? D : (ip == "2" ? W : L)] += 1;
                                 // mark as used
-                                used[(ip == "3" && draw) ? 2 : (ip == "1" ? 0 : 1)] = true;
-                                used[(ip == "3" && draw) ? 2 : (ip == "2" ? 0 : 1)] = true;
-                                used_now[(ip == "3" && draw) ? 2 : (ip == "1" ? 0 : 1)] = true;
-                                used_now[(ip == "3" && draw) ? 2 : (ip == "2" ? 0 : 1)] = true;
+                                used[(ip == "3" && draw) ? D : (ip == "1" ? W : L)] = true;
+                                used[(ip == "3" && draw) ? D : (ip == "2" ? W : L)] = true;
+                                used_now[(ip == "3" && draw) ? D : (ip == "1" ? W : L)] = true;
+                                used_now[(ip == "3" && draw) ? D : (ip == "2" ? W : L)] = true;
                             }
                             else {
                                 // increment appropriate field
@@ -465,6 +467,35 @@ void stat(map<string, vector<int>>& stats, map<string, int*> indices, vector<str
                                 used[field_indices[(ip == "3" && field_indices[D] != -1) ? D : (ip == "2" ? W : L)]] = true;
                                 used_now[field_indices[(ip == "3" && field_indices[D] != -1) ? D : (ip == "1" ? W : L)]] = true;
                                 used_now[field_indices[(ip == "3" && field_indices[D] != -1) ? D : (ip == "2" ? W : L)]] = true;
+                                // Account for Tennis tiebreaks and Bowling stats (points, strikes, and spares)
+                                if (sport == "tennis" && fields[col] == "set" && ((n1s == 7 && n2s == 6) || (n1s == 6 && n2s == 7))) {
+                                    while (!valid) {
+                                        cout << "Please select the winner for the tiebreaker:" << endl;
+                                        cout << "0: No Score" << endl;
+                                        cout << "1: " << n1 << endl;
+                                        cout << "2: " << n2 << endl;
+                                        cout << "Enter your selection: ";
+                                        cin >> ip;
+                                        ip = trim(ip);
+                                        if (ip == "0" || ip == "1" || ip == "2") { // valid input
+                                            if (ip != "0") {
+                                                // increment tiebreak field
+                                                stats[n1][ip == "1" ? TW : TL] += 1;
+                                                stats[n2][ip == "2" ? TW : TL] += 1;
+                                                // mark as used
+                                                used[TW] = true;
+                                                used[TL] = true;
+                                                used_now[TW] = true;
+                                                used_now[TL] = true;
+                                            }
+                                            valid = true;
+                                            break;
+                                        }
+                                        else {
+                                            cout << "ERROR: Invalid Input" << endl;
+                                        }
+                                    }
+                                }
                             }
                         }
                         valid = true;
@@ -478,23 +509,34 @@ void stat(map<string, vector<int>>& stats, map<string, int*> indices, vector<str
             else {
                 if (use_case == 2) { // account for winleft
                     // increment appropriate field
-                    stats[n1][(n1s == n2s && draw) ? 2 : ((n1s > n2s || winleft) ? 0 : 1)] += 1;
-                    stats[n2][(n2s == n1s && draw) ? 2 : ((n2s > n1s && !winleft) ? 0 : 1)] += 1;
+                    stats[n1][(n1s == n2s && draw) ? D : ((n1s > n2s || winleft) ? W : L)] += 1;
+                    stats[n2][(n2s == n1s && draw) ? D : ((n2s > n1s && !winleft) ? W : L)] += 1;
                     // mark as used
-                    used[(n1s == n2s && draw) ? 2 : ((n1s > n2s || winleft) ? 0 : 1)] = true;
-                    used[(n2s == n1s && draw) ? 2 : ((n2s > n1s && !winleft) ? 0 : 1)] = true;
-                    used_now[(n1s == n2s && draw) ? 2 : ((n1s > n2s || winleft) ? 0 : 1)] = true;
-                    used_now[(n2s == n1s && draw) ? 2 : ((n2s > n1s && !winleft) ? 0 : 1)] = true;
+                    used[(n1s == n2s && draw) ? D : ((n1s > n2s || winleft) ? W : L)] = true;
+                    used[(n2s == n1s && draw) ? D : ((n2s > n1s && !winleft) ? W : L)] = true;
+                    used_now[(n1s == n2s && draw) ? D : ((n1s > n2s || winleft) ? W : L)] = true;
+                    used_now[(n2s == n1s && draw) ? D : ((n2s > n1s && !winleft) ? W : L)] = true;
                 }
-                else {
+                else { // account for winleft
                     // increment appropriate field
-                    stats[n1][field_indices[(n1s == n2s && field_indices[D] != -1) ? D : ((n1s > n2s) ? W : L)]] += 1;
+                    stats[n1][field_indices[(n1s == n2s && field_indices[D] != -1) ? D : ((n1s > n2s || (n1s == n2s && winleft)) ? W : L)]] += 1;
                     stats[n2][field_indices[(n2s == n1s && field_indices[D] != -1) ? D : ((n2s > n1s) ? W : L)]] += 1;
                     // mark as used
-                    used[field_indices[(n1s == n2s && field_indices[D] != -1) ? D : ((n1s > n2s) ? W : L)]] = true;
+                    used[field_indices[(n1s == n2s && field_indices[D] != -1) ? D : ((n1s > n2s || (n1s == n2s && winleft)) ? W : L)]] = true;
                     used[field_indices[(n2s == n1s && field_indices[D] != -1) ? D : ((n2s > n1s) ? W : L)]] = true;
                     used_now[field_indices[(n1s == n2s && field_indices[D] != -1) ? D : ((n1s > n2s) ? W : L)]] = true;
                     used_now[field_indices[(n2s == n1s && field_indices[D] != -1) ? D : ((n2s > n1s) ? W : L)]] = true;
+                    // Account for Tennis tiebreaks and Bowling stats (points, strikes, and spares)
+                    if (sport == "tennis" && fields[col] == "set" && ((n1s == 7 && n2s == 6) || (n1s == 6 && n2s == 7))) {
+                        // increment tiebreak field
+                        stats[n1][n1s > n2s ? TW : TL] += 1;
+                        stats[n2][n2s > n1s ? TW : TL] += 1;
+                        // mark as used
+                        used[TW] = true;
+                        used[TL] = true;
+                        used_now[TW] = true;
+                        used_now[TL] = true;
+                    }
                 }
             }
         }
@@ -886,7 +928,7 @@ int main() {
             flag = trim(flag);
             // check for type of line
             if (!flag.length() || flag == "*") { // match
-                stat(stats, indices, names, fields, used, match, (flag.length() ? true : false), draw, winleft);
+                stat(stats, indices, names, fields, used, match, sport, (flag.length() ? true : false), draw, winleft);
             }
             else if (first || flag == "h" || flag == "H") { // header
                 // getline twice to skip the columns
