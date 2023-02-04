@@ -100,6 +100,8 @@ bool validate(ifstream& matches, string& filename, vector<string>& valid_fields)
     bool data = false;
     bool valid = true;
     string row;
+    string flag;
+    string name;
     // reset matches
     matches.seekg(0);
     // loop through each row
@@ -107,9 +109,8 @@ bool validate(ifstream& matches, string& filename, vector<string>& valid_fields)
         // check if row has data
         if (row.length()) {
             // create a stream for the line
-            stringstream line(row);
+            stringstream line(rcsvtrim(ltrim(row)));
             // get and trim flag
-            string flag;
             getline(line, flag, ',');
             flag = trim(flag);
             // check for type of line
@@ -123,7 +124,6 @@ bool validate(ifstream& matches, string& filename, vector<string>& valid_fields)
                     data = true;
                 }
                 // check if there's a name in the second and third column
-                string name;
                 for (int col = 1; col <= 2; col++) {
                     getline(line, name, ',');
                     name = trim(name);
@@ -132,15 +132,15 @@ bool validate(ifstream& matches, string& filename, vector<string>& valid_fields)
                         valid = false;
                     }
                 }
-                // check if each scoring column are formatted correctly (0-0)
+                // check if each scoring column are formatted correctly
                 string score;
                 int col = 0;
                 bool col_data = false;
-                while (!line.eof()) {
+                while (getline(line, score, ',')) {
                     // increment column count
                     col++;
-                    // get score
-                    getline(line, score, ',');
+                    // trim score
+                    score = trim(score);
                     // check if there is data
                     if (!score.length()) {
                         continue;
@@ -178,21 +178,25 @@ bool validate(ifstream& matches, string& filename, vector<string>& valid_fields)
                         continue;
                     }
                 }
+                /* NOTE: Score can be empty, handle in stat
                 // check if there are no columns
                 if (!col) {
                     cout << "ERROR: (line " << count << ") no scoring data" << endl;
                     valid = false;
                 }
+                */
                 // check if there are too many columns
                 if (col > cols) {
                     cout << "ERROR: (line " << count << ") extra columns" << endl;
                     valid = false;
                 }
+                /* NOTE: Score can be empty, handle in stat
                 // check if there is col_data
                 if (!col_data) {
                     cout << "ERROR: (line " << count << ") no scoring data" << endl;
                     valid = false;
                 }
+                */
             }
             else if (first || flag == "h" || flag == "H") { // header
                 // set first to false
@@ -271,7 +275,7 @@ vector<string> fieldtypes(stringstream& header, vector<string>& valid_fields) {
     return fields;
 }
 
-void stat(map<string, vector<int>>& stats, map<string, int*> indices, vector<string>& names, vector<string>& fields, vector<bool>& used, stringstream& match, string sport, bool check, bool& draw, bool& winleft) {
+void stat(map<string, vector<int>>& stats, map<string, int*> indices, vector<string>& fields, vector<bool>& used, stringstream& match, string sport, bool check, bool& draw, bool& winleft) {
     // get names
     string n1; // player/team 1
     getline(match, n1, ',');
@@ -286,7 +290,6 @@ void stat(map<string, vector<int>>& stats, map<string, int*> indices, vector<str
             n1sl.push_back(0);
         }
         stats[n1] = n1sl;
-        names.push_back(n1);
     }
     if (stats.find(n2) == stats.end()) {
         vector<int> n2sl;
@@ -294,7 +297,6 @@ void stat(map<string, vector<int>>& stats, map<string, int*> indices, vector<str
             n2sl.push_back(0);
         }
         stats[n2] = n2sl;
-        names.push_back(n2);
     }
     // create a used_now vector to for pre-decider and decider check
     vector<bool> used_now;
@@ -316,7 +318,7 @@ void stat(map<string, vector<int>>& stats, map<string, int*> indices, vector<str
     string ip;
     string score;
     while (getline(match, score, ',') || !pre_decided || !decided) {
-        // TODO: Account for Tennis tiebreaks and Bowling stats (points, strikes, and spares)
+        // TODO: Account for Bowling stats (points, strikes, and spares)
         if (score.length()) {
             dash = score.find('-');
             // get score for n1 and n2
@@ -860,7 +862,6 @@ int main() {
     matches.seekg(0);
     // create vars
     map<string, vector<int>> stats;
-    vector<string> names;
     vector<string> fields;
     bool first = true;
     bool draw = (sport == "bowling" || sport == "boxing" || sport == "football" || sport == "handball" || sport == "soccer") ? true : false;
@@ -872,13 +873,13 @@ int main() {
     while (getline(matches, line)) {
         if (line.length()) {
             // create a stream for the line
-            stringstream match(line);
+            stringstream match(rcsvtrim(ltrim(line)));
             // get and trim flag
             getline(match, flag, ',');
             flag = trim(flag);
             // check for type of line
             if (!flag.length() || flag == "*") { // match
-                stat(stats, indices, names, fields, used, match, sport, (flag.length() ? true : false), draw, winleft);
+                stat(stats, indices, fields, used, match, sport, (flag.length() ? true : false), draw, winleft);
             }
             else if (first || flag == "h" || flag == "H") { // header
                 // getline twice to skip the columns
@@ -893,6 +894,11 @@ int main() {
                 first = false;
             }
         }
+    }
+    // get names
+    vector<string> names;
+    for (pair<string, vector<int>> player : stats) {
+        names.push_back(player.first);
     }
     // sort names alphabetically case-insensitive
     sort(names.begin(), names.end(), [](string a, string b) -> bool {
@@ -926,7 +932,6 @@ int main() {
                     cout << stats[names[n]][col] << " ";
                 }
                 row += (n == -1 ? header[col] + "," : to_string(stats[names[n]][col]) + ",");
-                
             }
         }
         cout << endl;
